@@ -26,8 +26,29 @@
 	)
 )
 			         
-;(defun combine-iterative(x y) 
-;	(cond 	
+(defun combine-iterative(x y) 
+  (tagbody
+   (go point-a)
+   
+   point-a
+   (cond ((or (equal nil x) (equal nil y)) (go point-end))
+	 (t (go point-b))
+	 )
+
+   point-b
+   (cond ((and (not (listp x)) (not (listp y))) (order x y))
+	 (t (go point-c))
+	 )
+
+   point-c
+   (cond ((and (listp x) (listp y)) (cons (order (car x) (car y)) (go point-a)))
+	 (t (go point-end))
+	 )
+   
+   point-end ()
+   )
+)
+
 
 (defun combine-mapcar(x y)
 	(cond 
