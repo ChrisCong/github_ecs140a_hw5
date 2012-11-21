@@ -25,30 +25,25 @@
 		)
 	)
 )
-			         
-(defun combine-iterative(x y) 
-  (tagbody
-   (go point-a)
-   
-   point-a
-   (cond ((or (equal nil x) (equal nil y)) (go point-end))
-	 (t (go point-b))
-	 )
 
-   point-b
-   (cond ((and (not (listp x)) (not (listp y))) (order x y))
-	 (t (go point-c))
-	 )
-
-   point-c
-   (cond ((and (listp x) (listp y)) (cons (order (car x) (car y)) (go point-a)))
-	 (t (go point-end))
-	 )
-   
-   point-end ()
-   )
+(defun itr-helper(x y)
+	(do ((keep x (rest keep)) (keep2 y (rest keep2)) 
+		(restore nil (append restore (list (order (first keep) (first keep2))))))
+	((null keep) restore)
+	return restore
+	)
 )
 
+(defun combine-iterative(x y)
+	(cond 
+		((or (equal nil x) (equal nil y))
+			()
+		)
+		((and (listp x) (listp y) (itr-helper x y)))
+		(t (order x y))
+	)
+)
+			    	
 
 (defun combine-mapcar(x y)
 	(cond 
@@ -61,3 +56,28 @@
 		(t (order x y))		;else order them
 	)
 )
+
+;;;;;;;;;;;;;;;;;;;;;;part2;;;;;;;;;;;;;;;;;;;;
+
+(defun remove-if-recursive(f x) 
+        (cond
+		((null x)	;;if nothing do nothing 
+			()
+		)
+		((not (funcall f (first x)))	;;if first is not function remove first x
+			(cons (first x) (remove-if-recursive f (rest x)))
+		)
+		(t (remove-if-recursive f (rest x)))	;;else recurse through and remove rest of list x
+        )
+)
+
+
+(defun remove-if-mapcar(f x)
+	(cond 
+		(setq helper mapcar #'(lambda (x) 
+			(if (not (funcall f x)) (list x))) x)
+	)
+			(apply #'append helper)
+)
+
+
